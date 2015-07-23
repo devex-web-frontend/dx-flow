@@ -6,6 +6,8 @@
 
 ## Directory-based project format:
 .idea/
+!.idea/inspectionProfiles
+!.idea/jsLinters
 # if you remove the above rule, at least ignore the following:
 
 # User-specific stuff:
@@ -48,3 +50,4 @@ crashlytics.properties
 crashlytics-build.properties
 
 *.log
+gitflow

@@ -1,19 +1,28 @@
 {
   "name": "dx-hooks",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+		"postinstall": "git clone git@github.com:nvie/gitflow.git"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/devex-web-frontend/dx-hooks"
+  },
+  "bin": {
+    "dx-flow": "./cli.js"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/devex-web-frontend/dx-hooks/issues"
   },
-  "homepage": "https://github.com/devex-web-frontend/dx-hooks"
+  "homepage": "https://github.com/devex-web-frontend/dx-hooks",
+  "dependencies": {
+    "eslint": "^0.24.1",
+    "eslint-config-dx": "git://github.com/devex-web-frontend/eslint-config-dx",
+    "shelljs": "^0.5.1"
+  }
 }
