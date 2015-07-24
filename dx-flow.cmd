@@ -7,8 +7,8 @@
   @ECHO OFF
   @SET SCRIPT=%~dp0)
   @SET SCRIPT=%SCRIPT:\=/%
-  @SET SCRIPT=%SCRIPT:.bin/=dx-flow/cli.sh%
+  @SET SCRIPT=%SCRIPT:.bin/=dx-flow/cli.cmd%
 
-  sh %SCRIPT% %*
+  %SCRIPT% %*
   EXIT
 )

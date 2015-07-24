@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-root=$( cd $(dirname $0) && pwd -P )
+root=$( cd $(dirname `readlink -f ${BASH_SOURCE[0]}`) && pwd -P )
 
 if [ "$1" = "bump" ] || [ "$1" = "hook" ]; then
 	node "$root/node-cli.js" ${*:1}
