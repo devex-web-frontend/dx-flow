@@ -49,8 +49,9 @@ app
 	.command('*')
 	.description('Proxy to git-flow')
 	.action(function(name, options) {
-		var args = process.argv.slice(2).join(' ');
-		shell.exec('sh ' + gitflow + ' ' + args);
+		throw new Error('You should not use node-cli.js as a proxy to gitflow, ' +
+			'as it does not pass stdin through. ' +
+			'Use cli.sh instead!');
 	});
 
 app

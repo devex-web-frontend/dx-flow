@@ -1,8 +1,8 @@
 {
-  "name": "dx-hooks",
-  "version": "0.2.0",
+  "name": "dx-flow",
+  "version": "0.3.0",
   "description": "",
-  "main": "index.js",
+  "main": "node-cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +11,7 @@
     "url": "https://github.com/devex-web-frontend/dx-hooks"
   },
   "bin": {
-    "dx-flow": "./cli.js"
+    "dx-flow": "./cli.sh"
   },
   "author": "",
   "license": "ISC",
