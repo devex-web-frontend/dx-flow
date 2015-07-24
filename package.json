@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/devex-web-frontend/dx-hooks",
   "dependencies": {
+    "commander": "^2.8.1",
     "eslint": "^0.24.1",
     "eslint-config-dx": "git://github.com/devex-web-frontend/eslint-config-dx",
     "semver": "^5.0.1",

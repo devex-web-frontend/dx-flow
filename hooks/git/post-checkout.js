@@ -37,7 +37,7 @@ function bump(fileName, version) {
 
 		if (version !== pversion) {
 			var content = fs.readFileSync(file).toString();
-			var modified = content.replace(/"version":\s*".+"/, "\"version\": \"" + version + "\"");
+			var modified = content.replace(/"version":\s*".+"/, '"version": "' + version + '"');
 			fs.writeFileSync(file, modified);
 			return true;
 		}
