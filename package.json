@@ -5,7 +5,7 @@
   "main": "node-cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-		"postinstall": "cd ../.bin/ && ln -fs ../dx-flow/dx-flow.cmd dx-flow.cmd"
+		"postinstall": "node ./scripts/install-dx-flow-cmd.js"
   },
   "repository": {
     "type": "git",
