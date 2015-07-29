@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var shell = require('shelljs');
 var semver = require('semver');
+var glob = require('glob');
 
 var cwd = process.cwd();
 var root = path.dirname(__filename);
@@ -21,7 +22,7 @@ app
 
 app
 	.command('hook [name]')
-	.description('Install git hook by its name (by default install all hooks)')
+	.description('Installs hook by its name (by default install all hooks)')
 	.action(function(name, options) {
 		if (name) {
 			//exact hook name
@@ -29,9 +30,26 @@ app
 		} else {
 			//iterate
 			fs.readdirSync(gitHooks).forEach(function(name) {
-				hook(path.basename(name, '.js'));
+				hook(path.basename(name, path.extname(name)));
 			});
 		}
+		console.log('Done');
+	});
+
+app
+	.command('clean')
+	.description('Removes all hooks')
+	.action(function(options) {
+		fs.readdirSync(gitHooks).forEach(function(name) {
+			var hookName = path.basename(name, path.extname(name));
+			var destination = path.resolve(cwd, '.git', 'hooks', hookName);
+			console.log('Removing hook', hookName + '...');
+			fs.unlink(destination, function(error) {
+				if (error && error.code !== 'ENOENT') {
+					throw error;
+				}
+			});
+		});
 		console.log('Done');
 	});
 
@@ -67,7 +85,13 @@ if (!app.args.length) {
  */
 function hook(name) {
 	console.log('Installing hook ' + name + '...');
-	var source = path.resolve(gitHooks, name + '.js');
+	var files = glob.sync(path.resolve(gitHooks, name) + '.*');
+	if (files.length === 0) {
+		throw new Error('Hook ' + name + ' not found!');
+	}
+	if (files.length > 1) {
+		throw new Error('Too many ' + name + ' hooks found!');
+	}
 	var destination = path.resolve(cwd, '.git', 'hooks', name);
-	shell.exec('ln -fs ' + source + ' ' + destination);
+	shell.exec('ln -fs ' + files[0] + ' ' + destination);
 }
