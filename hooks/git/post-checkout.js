@@ -20,7 +20,7 @@ exec('git rev-parse --abbrev-ref HEAD', function(error, branch, stderr) {
 		});
 
 		if (changed.length > 0) {
-			exec('git commit -m "bump version" ' + changed.join(' '));
+			exec('git commit -m "bump version ' + repoVersion + '" ' + changed.join(' '));
 		}
 	}
 });
