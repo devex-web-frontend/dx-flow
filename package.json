@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "node ./scripts/install-dx-flow-cmd.js",
-    "esfslint": "eslint --config ./node_modules/eslint-config-dx/.eslintrc --ext .js,.jsx ."
+    "esslint": "eslint --config ./node_modules/eslint-config-dx/.eslintrc --ext .js,.jsx ."
   },
   "repository": {
     "type": "git",
