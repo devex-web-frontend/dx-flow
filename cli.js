@@ -86,7 +86,9 @@ if (!app.args.length) {
  * @param {String} name
  */
 function hook(name) {
-	var [namespace, part] = name.split('/');
+	var split = name.split('/');
+	var namespace = split[0];
+	var part = split[1];
 
 	//check if hook exists
 	var file = path.resolve(DX_FLOW_HOOKS_DIRECTORY, name);
