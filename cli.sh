@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-node ./cli.js "$@"
+CURRENT_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+node ${CURRENT_DIRECTORY}/cli.js "$@"
