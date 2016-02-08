@@ -12,7 +12,7 @@
     "url": "https://github.com/devex-web-frontend/dx-hooks"
   },
   "bin": {
-    "dx-flow": "./cli.sh"
+    "dx-flow": "./cli.js"
   },
   "author": "",
   "license": "ISC",
