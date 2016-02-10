@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
 var exec = require('child_process').exec;
+var path = require('path');
 var files = ['package.json', 'bower.json'];
+var fs = require('fs');
+var cwd = process.cwd();
 
 exec('git rev-parse --abbrev-ref HEAD', function(error, branch, stderr) {
 	if (error) {
@@ -14,7 +17,7 @@ exec('git rev-parse --abbrev-ref HEAD', function(error, branch, stderr) {
 
 		var changed = [];
 		files.forEach(function(file) {
-			if (bump(file, repoVersion)) {
+			if (bump(path.resolve(cwd, file), repoVersion)) {
 				changed.push(file);
 			}
 		});
@@ -25,13 +28,13 @@ exec('git rev-parse --abbrev-ref HEAD', function(error, branch, stderr) {
 	}
 });
 
-function bump(fileName, version) {
-	var path = require('path');
-	var fs = require('fs');
-
-	var cwd = process.cwd();
-	var file = path.resolve(cwd, fileName);
-
+/**
+ * Bumps version section in speficied file
+ * @param {String} file
+ * @param {String} version
+ * @returns {boolean}
+ */
+function bump(file, version) {
 	if (fs.existsSync(file)) {
 		var pversion = require(file).version;
 
@@ -44,3 +47,5 @@ function bump(fileName, version) {
 	}
 	return false;
 }
+
+module.exports = bump;

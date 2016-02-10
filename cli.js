@@ -17,6 +17,17 @@ var AVAILABLE_HOOKS = getHooks(DX_FLOW_HOOKS_DIRECTORY);
 var HOOKS_DIRECTORY_POSTFIX = '-hooks'; //this is used in launcher.sh
 var DESTINATION_HOOKS_DIRECTORY = path.resolve(CWD, '.git', 'hooks');
 
+var DESTINATION_PACKAGE_JSON = path.resolve(CWD, 'package.json');
+var DESTINATION_BOWER_JSON = path.resolve(CWD, 'bower.json');
+
+var bump = require(path.resolve(DX_FLOW_HOOKS_DIRECTORY, 'post-checkout/autobump.js'));
+
+var BRANCH_MAP = {
+	major: 'release',
+	minor: 'release',
+	patch: 'hotfix'
+};
+
 if (ROOT === CWD) {
 	throw new Error('Do not run dx-flow in its own directory');
 }
@@ -51,29 +62,51 @@ app
 		getHooks(DESTINATION_HOOKS_DIRECTORY).forEach(function(name) {
 			console.log('Removing hook', name + '...');
 			var destination = path.resolve(DESTINATION_HOOKS_DIRECTORY, name);
-			cp.execSync('rm ' + destination);
+			exec('rm ' + destination);
 		});
 		console.log('Done');
 	});
 
 app
-	.command('bump <version>')
-	.description('Returns bumped version from package.json (major|minor|patch)')
+	.command('start <version>')
+	.description('Starts new branch (release/hotfix) with bumped version from package.json (major|minor|patch)')
 	.action(function(version, options) {
 		if (['major', 'minor', 'patch'].indexOf(version) === -1) {
 			throw new Error('Unknown version, should be one of (major|minor|patch)');
 		}
-		console.log(semver.inc(require(path.resolve(CWD, 'package.json')).version, version));
+		if (fs.existsSync(DESTINATION_PACKAGE_JSON)) {
+			var packageJson = require(DESTINATION_PACKAGE_JSON);
+			var bumpedVersion = semver.inc(packageJson.version, version);
+
+			console.log('Starting ' + version + ' from ' + packageJson.version + ' to ' + bumpedVersion);
+			gitflow(BRANCH_MAP[version] + ' start ' + bumpedVersion);
+
+			var changedFiles = [DESTINATION_PACKAGE_JSON, DESTINATION_BOWER_JSON].filter(function(file) {
+				return bump(file, bumpedVersion);
+			});
+			console.log('Bumped ' + changedFiles.join(' '));
+
+			commit('bump version ' + bumpedVersion, changedFiles);
+			console.log('Commited ' + changedFiles.join(' '));
+
+			switch (version) {
+				case 'major': //fall through
+				case 'minor':
+					gitflow(BRANCH_MAP[version] + ' finish ' + bumpedVersion + ' -n');
+					break;
+				case 'patch':
+					break;
+			}
+		} else {
+			throw new Error(DESTINATION_PACKAGE_JSON + ' is not found');
+		}
 	});
 
 app
 	.command('*')
 	.description('Proxy to git-flow')
 	.action(function(name, options) {
-		console.log(GITFLOW_PATH);
-		return cp.execSync('bash ' + GITFLOW_PATH + ' ' + process.argv.slice(2).join(' '), {
-			stdio: 'inherit'
-		});
+		return gitflow(process.argv.slice(2).join(' '));
 	});
 
 app
@@ -103,15 +136,15 @@ function hook(name) {
 
 	//install launcher
 	console.log('Installing launcher ' + namespace + '...');
-	cp.execSync('ln -fs ' + LAUNCHER_PATH + ' ' + path.resolve(DESTINATION_HOOKS_DIRECTORY, namespace));
+	exec('ln -fs ' + LAUNCHER_PATH + ' ' + path.resolve(DESTINATION_HOOKS_DIRECTORY, namespace));
 
 	//install hook
 	console.log('Installing hook ' + name + '...');
 	if (!fs.existsSync(destinationDirectory)) {
-		cp.execSync('mkdir ' + destinationDirectory);
+		exec('mkdir ' + destinationDirectory);
 	}
 	var destination = path.resolve(destinationDirectory, part);
-	cp.execSync('ln -fs ' + file + ' ' + destination);
+	exec('ln -fs ' + file + ' ' + destination);
 }
 
 /**
@@ -123,4 +156,38 @@ function getHooks(directory) {
 	return glob.sync(path.join(directory, '*/*.*')).map(function(file) {
 		return path.relative(directory, file).replace(/\\/g, '/');
 	});
+}
+
+/**
+ * Launches gitflow with specified argument string, inherits stdio
+ * @param {String} argsString
+ * @returns {*}
+ */
+function gitflow(argsString) {
+	return exec('bash ' + GITFLOW_PATH + ' ' + argsString);
+}
+
+/**
+ * Synchronously executes passed command inheriting stdio
+ * @param {String} command
+ * @returns {*}
+ */
+function exec(command) {
+	return cp.execSync(command, {
+		stdio: 'inherit'
+	});
+}
+
+/**
+ * Commits specified files under specified message using git
+ * @param {String} message
+ * @param {Array.<String>} files
+ */
+function commit(message, files) {
+	if (files.length !== 0) {
+		var escapedMessage = '"' + message.replace(/"/g, '\"') + '"';
+		var scapedFiles = '"' + files.join('" "') + '"';
+		var gitDir = '--git-dir "' + CWD + '/.git"';
+		exec('git ' + gitDir + ' commit -m ' + escapedMessage + ' ' + scapedFiles);
+	}
 }
