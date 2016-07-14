@@ -1,6 +1,6 @@
 {
   "name": "dx-flow",
-  "version": "0.6.0",
+  "version": "0.6.4",
   "description": "",
   "main": "cli.js",
   "scripts": {
