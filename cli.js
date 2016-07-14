@@ -68,6 +68,18 @@ app
 	});
 
 app
+	.command('install')
+	.description('Installs npm dependencies')
+	.action(function(options) {
+		if (fs.existsSync(DESTINATION_PACKAGE_JSON)) {
+			var packageJson = require(DESTINATION_PACKAGE_JSON);
+			var dependencies = Object.keys(packageJson.dependencies).join(' ');
+			console.log('Installing', dependencies);
+			exec('npm i ' + dependencies);
+		}
+	});
+
+app
 	.command('start <version>')
 	.description('Starts new branch (release/hotfix) with bumped version from package.json (major|minor|patch)')
 	.action(function(version, options) {
