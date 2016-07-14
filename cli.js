@@ -73,7 +73,10 @@ app
 	.action(function(options) {
 		if (fs.existsSync(DESTINATION_PACKAGE_JSON)) {
 			var packageJson = require(DESTINATION_PACKAGE_JSON);
-			var dependencies = Object.keys(packageJson.dependencies).join(' ');
+			var dependencies = Object
+				.keys(packageJson.dependencies)
+				.map(key => `${key}@${packageJson.dependencies[key]}`)
+				.join(' ');
 			console.log('Installing', dependencies);
 			exec('npm i ' + dependencies);
 		}
